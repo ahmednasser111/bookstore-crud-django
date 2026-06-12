@@ -1,0 +1,16 @@
+{% extends 'books/base.html' %}
+
+{% block content %}
+
+<a href="/create/" class="btn-add">Add Book</a>
+
+{% for book in books %}
+    <div class="book-item">
+        <div class="book-title">{{ book.title }}</div>
+        <a href="/show/{{ book.id }}/">Show</a>
+        <a href="/edit/{{ book.id }}/">Edit</a>
+        <a href="/delete/{{ book.id }}/">Delete</a>
+    </div>
+{% endfor %}
+
+{% endblock %}
