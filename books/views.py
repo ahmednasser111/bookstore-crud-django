@@ -1,34 +1,38 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Book
+from .forms import BookForm
 
-def index(request):
-    books = Book.objects.all()
-    return render(request, 'books/index.html', {'books': books})
-def create(request):
+class BookListView(ListView):
+    model = Book
+    template_name = 'books/book_list.html'
+    context_object_name = 'books'
 
-    if request.method == 'POST':
-        Book.objects.create(
-            title=request.POST['title'],
-            author=request.POST['author'],
-            price=request.POST['price']
-        )
-        return redirect('/')
-    return render(request, 'books/create.html')
-def edit(request, id):
-    book = Book.objects.get(id=id)
+class BookDetailView(DetailView):
+    model = Book
+    template_name = 'books/book_detail.html'
+    context_object_name = 'book'
 
-    if request.method == 'POST':
-        book.title = request.POST['title']
-        book.author = request.POST['author']
-        book.price = request.POST['price']
-        book.save()
-        return redirect('/')
-    return render(request, 'books/edit.html', {'book': book})
-def delete(request, id):
-    book = Book.objects.get(id=id)
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        obj.views += 1
+        obj.save()
+        return obj
 
-    book.delete()
-    return redirect('/')
-def show(request, id):
-    book = Book.objects.get(id=id)
-    return render(request, 'books/show.html', {'book': book})
+class BookCreateView(CreateView):
+    model = Book
+    form_class = BookForm
+    template_name = 'books/book_form.html'
+    success_url = reverse_lazy('books.index')
+
+class BookUpdateView(UpdateView):
+    model = Book
+    form_class = BookForm
+    template_name = 'books/book_form.html'
+    success_url = reverse_lazy('books.index')
+
+class BookDeleteView(DeleteView):
+    model = Book
+    template_name = 'books/book_confirm_delete.html'
+    success_url = reverse_lazy('books.index')

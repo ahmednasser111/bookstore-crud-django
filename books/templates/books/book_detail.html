@@ -1,0 +1,21 @@
+{% extends 'books/base.html' %} {% block content %}
+<div class="detail-section">
+	<h2>{{ book.title }}</h2>
+
+	<div class="book-meta" style="margin-bottom: 1.5rem">
+		<span class="rating">{{ book.rate|default:"0.0" }}</span>
+		<span>{{ book.views }} views</span>
+	</div>
+
+	<h3>Description</h3>
+	<div class="detail-content">{{ book.desc|linebreaks }}</div>
+</div>
+
+<div
+	class="actions"
+	style="margin-top: 2.5rem; border-top: 1px solid #eee; padding-top: 1.5rem">
+	<a href="{% url 'books.index' %}" class="btn btn-primary">Back to List</a>
+	<a href="{% url 'books.edit' book.pk %}" class="btn btn-success">Edit</a>
+	<a href="{% url 'books.delete' book.pk %}" class="btn btn-danger">Delete</a>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'books/base.html' %} {% block content %}
+<div
+	style="
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+	">
+	<h2>Book List</h2>
+	<a href="{% url 'books.create' %}" class="btn btn-success">Add New Book</a>
+</div>
+
+<div class="book-list">
+	{% for book in books %}
+	<div class="book-card">
+		<h3>{{ book.title }}</h3>
+		<div class="book-meta">
+			<span class="rating">{{ book.rate|default:"0.0" }}</span>
+			<span>{{ book.views }} views</span>
+		</div>
+		<div class="actions">
+			<a href="{% url 'books.show' book.pk %}" class="btn btn-primary"
+				>Details</a
+			>
+			<a href="{% url 'books.edit' book.pk %}" class="btn btn-success">Edit</a>
+			<a href="{% url 'books.delete' book.pk %}" class="btn btn-danger"
+				>Delete</a
+			>
+		</div>
+	</div>
+	{% empty %}
+	<p>No books found.</p>
+	{% endfor %}
+</div>
+{% endblock %}
