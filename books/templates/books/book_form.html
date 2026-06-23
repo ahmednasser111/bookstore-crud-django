@@ -6,8 +6,23 @@
 <div style="margin-top: 2rem;">
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <div class="actions">
+        {% for field in form %}
+            <div style="margin-bottom: 1rem;">
+                <label for="{{ field.id_for_label }}" style="display:block;font-weight:600;margin-bottom:0.3rem;">
+                    {{ field.label }}{% if field.field.required %} *{% endif %}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p style="color:#c53030;font-size:0.85rem;margin-top:0.25rem;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                {% if field.help_text %}
+                    <p style="color:#718096;font-size:0.8rem;margin-top:0.2rem;">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <div class="actions" style="margin-top: 1.5rem;">
             <button type="submit" class="btn btn-success">Save Book</button>
             <a href="{% url 'books.index' %}" class="btn btn-primary">Cancel</a>
         </div>

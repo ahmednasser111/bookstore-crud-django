@@ -1,35 +1,44 @@
-{% extends 'books/base.html' %} {% block content %}
-<div
-	style="
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 2rem;
-	">
-	<h2>Book List</h2>
-	<a href="{% url 'books.create' %}" class="btn btn-success">Add New Book</a>
+{% extends 'books/base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2>Book List</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'books.create' %}" class="btn btn-success">Add New Book</a>
+    {% endif %}
 </div>
 
 <div class="book-list">
-	{% for book in books %}
-	<div class="book-card">
-		<h3>{{ book.title }}</h3>
-		<div class="book-meta">
-			<span class="rating">{{ book.rate|default:"0.0" }}</span>
-			<span>{{ book.views }} views</span>
-		</div>
-		<div class="actions">
-			<a href="{% url 'books.show' book.pk %}" class="btn btn-primary"
-				>Details</a
-			>
-			<a href="{% url 'books.edit' book.pk %}" class="btn btn-success">Edit</a>
-			<a href="{% url 'books.delete' book.pk %}" class="btn btn-danger"
-				>Delete</a
-			>
-		</div>
-	</div>
-	{% empty %}
-	<p>No books found.</p>
-	{% endfor %}
+    {% for book in books %}
+    <div class="book-card">
+        <h3>{{ book.title }}</h3>
+        <div class="book-meta">
+            <span>Owner: <strong>{{ book.user.username }}</strong></span>
+            <span class="rating">⭐ {{ book.rate|default:"—" }}</span>
+            <span>{{ book.views }} views</span>
+        </div>
+        {% if book.categories.all %}
+        <div style="margin: 0.5rem 0;">
+            {% for cat in book.categories.all %}
+                <span style="background:#ebf8ff;border:1px solid #bee3f8;border-radius:4px;padding:2px 8px;font-size:0.8rem;margin-right:4px;">{{ cat.name }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if book.isbn %}
+        <div style="font-size:0.8rem;color:#718096;margin-top:0.25rem;">ISBN: {{ book.isbn.isbn_number }}</div>
+        {% endif %}
+        <div class="actions" style="margin-top: 0.75rem;">
+            <a href="{% url 'books.show' book.pk %}" class="btn btn-primary">Details</a>
+            {% if perms.books.change_book %}
+                <a href="{% url 'books.edit' book.pk %}" class="btn btn-success">Edit</a>
+            {% endif %}
+            {% if perms.books.delete_book %}
+                <a href="{% url 'books.delete' book.pk %}" class="btn btn-danger">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <p>No books found.</p>
+    {% endfor %}
 </div>
 {% endblock %}

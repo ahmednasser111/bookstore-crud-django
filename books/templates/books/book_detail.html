@@ -1,21 +1,46 @@
-{% extends 'books/base.html' %} {% block content %}
+{% extends 'books/base.html' %}
+
+{% block content %}
 <div class="detail-section">
-	<h2>{{ book.title }}</h2>
+    <h2>{{ book.title }}</h2>
 
-	<div class="book-meta" style="margin-bottom: 1.5rem">
-		<span class="rating">{{ book.rate|default:"0.0" }}</span>
-		<span>{{ book.views }} views</span>
-	</div>
+    <div class="book-meta" style="margin-bottom: 1rem;">
+        <span>Owner: <strong>{{ book.user.username }}</strong></span>
+        <span class="rating">⭐ {{ book.rate|default:"—" }}</span>
+        <span>{{ book.views }} views</span>
+    </div>
 
-	<h3>Description</h3>
-	<div class="detail-content">{{ book.desc|linebreaks }}</div>
+    {% if book.categories.all %}
+    <div style="margin-bottom: 1rem;">
+        <strong>Categories:</strong>
+        {% for cat in book.categories.all %}
+            <span style="background:#ebf8ff;border:1px solid #bee3f8;border-radius:4px;padding:2px 8px;font-size:0.85rem;margin-right:4px;">{{ cat.name }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if book.isbn %}
+    <div style="background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;margin-bottom:1.5rem;">
+        <strong>ISBN Details</strong>
+        <table style="margin-top:0.5rem;width:100%;border-collapse:collapse;">
+            <tr><td style="padding:0.25rem 0.5rem;color:#718096;">ISBN Number</td><td><code>{{ book.isbn.isbn_number }}</code></td></tr>
+            <tr><td style="padding:0.25rem 0.5rem;color:#718096;">Book Title</td><td>{{ book.isbn.book_title }}</td></tr>
+            <tr><td style="padding:0.25rem 0.5rem;color:#718096;">Author Title</td><td>{{ book.isbn.author_title|default:"—" }}</td></tr>
+        </table>
+    </div>
+    {% endif %}
+
+    <h3>Description</h3>
+    <div class="detail-content">{{ book.desc|linebreaks }}</div>
 </div>
 
-<div
-	class="actions"
-	style="margin-top: 2.5rem; border-top: 1px solid #eee; padding-top: 1.5rem">
-	<a href="{% url 'books.index' %}" class="btn btn-primary">Back to List</a>
-	<a href="{% url 'books.edit' book.pk %}" class="btn btn-success">Edit</a>
-	<a href="{% url 'books.delete' book.pk %}" class="btn btn-danger">Delete</a>
+<div class="actions" style="margin-top: 2.5rem; border-top: 1px solid #eee; padding-top: 1.5rem;">
+    <a href="{% url 'books.index' %}" class="btn btn-primary">Back to List</a>
+    {% if perms.books.change_book %}
+        <a href="{% url 'books.edit' book.pk %}" class="btn btn-success">Edit</a>
+    {% endif %}
+    {% if perms.books.delete_book %}
+        <a href="{% url 'books.delete' book.pk %}" class="btn btn-danger">Delete</a>
+    {% endif %}
 </div>
 {% endblock %}
